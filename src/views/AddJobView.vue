@@ -1,10 +1,24 @@
 <script setup>
 import router from '@/router';
-import { reactive } from 'vue';
+import { onMounted, reactive } from 'vue';
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
 
 const toast = useToast();
+
+const state = reactive({
+    user: JSON.parse(localStorage.getItem('user'))
+})
+
+
+
+onMounted(() => {
+    form.company.name = state.user.company.name,
+        form.company.description = state.user.company.title,
+        form.company.contactEmail = state.user.email,
+        form.company.contactPhone = state.user.phone,
+        form.location = state.user.company.address.address + ', ' + state.user.company.address.city + ', ' + state.user.company.address.state
+});
 
 const form = reactive({
     type: '',

@@ -13,9 +13,25 @@ const handleLogout = () => {
 
 }
 
+const state = reactive({
+    user: {}
+})
+
+
 onMounted(async () => {
     if (localStorage.getItem('access_token')) {
-        console.log('User is logged in');
+        const response = await axios.get('https://dummyjson.com/auth/me', {
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+            }
+        })
+
+        if (response.status === 200) {
+            state.user = response.data
+            localStorage.setItem('user', JSON.stringify(response.data));
+            console.log('User is logged in: ' + state.user.firstName);
+        }
     }
 })
 </script>
@@ -42,7 +58,15 @@ onMounted(async () => {
                                 :class="[isActiveLink('/job/add') ? 'text-white bg-green-900 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2' : 'text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2']">
                                 Add Job</RouterLink>
 
-                            <img v-if="false" class="h-10 w-auto" :src="logo" alt="Vue Jobs" />
+                            <template v-if="state.user.firstName">
+                                <img class="h-10 w-auto rounded-full border border-white-500" :src="state.user.image"
+                                    alt="Vue Jobs Logo" />
+                                <RouterLink to="/profile"
+                                    class="font-bold text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2">
+                                    {{ state.user.firstName }}
+                                </RouterLink>
+                            </template>
+
                             <RouterLink v-else to="/login"
                                 :class="[isActiveLink('/login') ? 'text-white bg-green-900 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2' : 'text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2']">
                                 Login</RouterLink>
